@@ -269,7 +269,7 @@
 
 - `routet-view`标签是用来加载views文件夹下组件内容的.
 
-- <router-link>对于的 index.js 部分，我们了解下：
+- `<router-link>`对于的 index.js 部分，我们了解下：
 
   ```js
   //引入 Vue.js
@@ -1703,7 +1703,10 @@
 
 - 官网写的顺序为,首先进入actions异步获取数据,然后进入mustations改变数据,最后进入state写入数据,然后把数据交给组件.
 
-- 想使用state中的数据需要在其他组件中使用`{{$store.state}}`,很像之前的路由$route.
+  ```vue
+  {{$store.state}}
+  //想使用state中的数据需要在其他组件中使用{{$store.state}}`,很像之前的路由$route.
+  ```
 
 - 这是挂载在Vue实例上的,实例内访问比如组建的methods中,要使用`this.$store`,固定写法.
 

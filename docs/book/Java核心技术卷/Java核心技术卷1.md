@@ -1166,7 +1166,7 @@ public void start(int interval,boolean beeo){
 
 - 原始类型用**第一个限定的类型变量**(也就是尖括号里的extend)来替换,如果没有给定限定就用Object替换.
 
-- 例如Pair<T>中的类型变量没有显示的限定,因此原始类型用Object替换T.
+- 例如`Pair<T>`中的类型变量没有显示的限定,因此原始类型用Object替换T.
 
 - 假如声明了如下类型
 
@@ -1293,7 +1293,7 @@ public void start(int interval,boolean beeo){
   Pair<String> p = Pair.makePair(String::new);
   ```
 
-- makePair方法接受一个Sipplier<T>,这是一个函数式接口,表示一个无参数而且返回类型为T的函数:
+- makePair方法接受一个`Sipplier<T>`,这是一个函数式接口,表示一个无参数而且返回类型为T的函数:
 
   ```java
   public static <T> Pair<T> makePair(Sipplier<T> constr){
@@ -1341,7 +1341,7 @@ public void start(int interval,boolean beeo){
   }
   ```
 
-- 如果个程序能够运行,就可以声明一个Singleton<Random>共享随机数生成器,声明一个Singleton<JFileChooser>共享文件选择器对话框.
+- 如果个程序能够运行,就可以声明一个`Singleton<Random>`共享随机数生成器,声明一个`Singleton<JFileChooser>`共享文件选择器对话框.
 
 - 但是这个程序无法工作,类型擦除后只剩下Singleton类,他只包含一个singleInstance域.
 
