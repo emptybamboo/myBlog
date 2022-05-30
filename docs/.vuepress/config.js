@@ -14,17 +14,18 @@ module.exports = {
             {text: '博文',
                 // 这里title是顶部导航的名字,后面可以链接进我们doc文件夹下的对应模块
                 items:[
-                    {text:"博客相关知识",link:'/VuePress/'},
+                    {text:"博客相关知识",link:'/vuePress/'},
                     {text:"JavaSE基础知识",link:'/javaBasics/'},
-                    {text:"Java框架知识",link:'/JavaFramework/'},
+                    {text:"Java框架知识",link:'/javaFramework/'},
                     {text:"技术书籍",link:'/book/'},
-                    {text:"前端",link:'/qianduan/'},
-                    {text:"数据库知识",link:'/SQL/'},
-                    {text:"项目实战",link:'/ProjectPractice/'},
-                    {text:"工作项目积累",link:'/ProjectEx/'},
+                    {text:"前端",link:'/js/'},
+                    {text:"数据库知识",link:'/sql/'},
+                    {text:"项目实战",link:'/projectPractice/'},
+                    {text:"工作项目积累",link:'/projectNote/'},
                     {text:"记错本",link:'/faultNote/'},
-                    {text:"PHP",link:'/PHP/'},
+                    {text:"php",link:'/php/'},
                     {text:"linux学习",link:'/linux/'},
+                    {text:"git笔记",link:'/git/'},
                 ]
             },
             {text: '工具网站',items: [
@@ -42,66 +43,66 @@ module.exports = {
                     ]
                 }
             ],
-            '/JavaFramework/': [
+            '/javaFramework/': [
                 {
                     title: 'SpringMVC',
                     children:[
-                        ['/JavaFramework/SpringMVC/7月11日','第一天'],
-                        ['/JavaFramework/SpringMVC/7月12日','第二天'],
-                        ['/JavaFramework/SpringMVC/7月14日','第三天'],
-                        ['/JavaFramework/SpringMVC/7月16日','第四天'],
+                        ['/javaFramework/SpringMVC/7月11日','第一天'],
+                        ['/javaFramework/SpringMVC/7月12日','第二天'],
+                        ['/javaFramework/SpringMVC/7月14日','第三天'],
+                        ['/javaFramework/SpringMVC/7月16日','第四天'],
                     ]
                 }
             ],
-            '/VuePress/': [
+            '/vuePress/': [
                 {
                     title: '博客相关知识',
                     children:[
-                        ['/VuePress/侧边栏相关/sidebar','侧边栏配置'],
+                        ['/vuePress/侧边栏相关/sidebar','侧边栏配置'],
                     ]
                 },
                 {
                     title: '遇到的问题',
                     children:[
-                        ['/VuePress/遇到的问题/技巧','写博文中可用到的技巧'],
-                        ['/VuePress/遇到的问题/Invisible','不能显示博文'],
-                        ['/VuePress/遇到的问题/部署','部署遇到的问题'],
-                        ['/VuePress/遇到的问题/更新','更新博文时遇到的问题'],
+                        ['/vuePress/遇到的问题/技巧','写博文中可用到的技巧'],
+                        ['/vuePress/遇到的问题/Invisible','不能显示博文'],
+                        ['/vuePress/遇到的问题/部署','部署遇到的问题'],
+                        ['/vuePress/遇到的问题/更新','更新博文时遇到的问题'],
                     ]
                 }
             ],
-            '/ProjectPractice/': [
+            '/projectPractice/': [
                 {
                     title: '码匠笔记',
                     children:[
-                        ['/ProjectPractice/码匠笔记/所遇问题','记录所遇到的问题'],
-                        ['/ProjectPractice/码匠笔记/day01','第一天'],
-                        ['/ProjectPractice/码匠笔记/day02','第二天'],
-                        ['/ProjectPractice/码匠笔记/day03','第三天'],
-                        ['/ProjectPractice/码匠笔记/day04','第四天'],
-                        ['/ProjectPractice/码匠笔记/day05','第五天'],
-                        ['/ProjectPractice/码匠笔记/day06','第六天'],
-                        ['/ProjectPractice/码匠笔记/day07','第七天'],
-                        ['/ProjectPractice/码匠笔记/day08','第八天'],
-                        ['/ProjectPractice/码匠笔记/day09','第九天'],
+                        ['/projectPractice/码匠笔记/所遇问题','记录所遇到的问题'],
+                        ['/projectPractice/码匠笔记/day01','第一天'],
+                        ['/projectPractice/码匠笔记/day02','第二天'],
+                        ['/projectPractice/码匠笔记/day03','第三天'],
+                        ['/projectPractice/码匠笔记/day04','第四天'],
+                        ['/projectPractice/码匠笔记/day05','第五天'],
+                        ['/projectPractice/码匠笔记/day06','第六天'],
+                        ['/projectPractice/码匠笔记/day07','第七天'],
+                        ['/projectPractice/码匠笔记/day08','第八天'],
+                        ['/projectPractice/码匠笔记/day09','第九天'],
                     ]
                 },
             ],
-            '/SQL/': [
+            '/sql/': [
                 {
                     title: '数据库相关',
                     children:[
-                        ['/SQL/MySQL/随笔随记','MySQL知识随笔'],
-                        ['/SQL/MySQL/索引','MySQL索引'],
-                        ['/SQL/MySQL/锁知识','MySQL锁'],
+                        ['/sql/mysql/随笔随记','MySQL知识随笔'],
+                        ['/sql/mysql/索引','MySQL索引'],
+                        ['/sql/mysql/锁知识','MySQL锁'],
                     ]
                 }
             ],
-            '/ProjectEx/': [
+            '/projectNote/': [
                 {
                     title: '项目积累经验',
                     children:[
-                        ['/ProjectEx/Java/贷款项目','贷款项目积累的知识'],
+                        ['/projectNote/Java/贷款项目','贷款项目积累的知识'],
                     ]
                 }
             ],
@@ -113,40 +114,40 @@ module.exports = {
                     ]
                 }
             ],
-            '/qianduan/': [
+            '/js/': [
                 {
-                    title: 'JS',
+                    title: 'js',
                     children:[
-                        ['/qianduan/JS/js基础笔记','JS基础知识笔记'],
-                        ['/qianduan/JS/js高级笔记','JS高级知识笔记'],
+                        ['/js/js/js基础笔记','js基础知识笔记'],
+                        ['/js/js/js高级笔记','js高级知识笔记'],
                     ]
                 },
                 {
                     title: 'jquery',
                     children:[
-                        ['/qianduan/jquery/米斯特吴jquery','米斯特吴jquery'],
+                        ['/js/jquery/米斯特吴jquery','米斯特吴jquery'],
                     ]
                 },
                 {
                     title: '李炎恢',
                     children:[
-                        ['/qianduan/lyh/axios&mock','axios&mock学习笔记'],
-                        ['/qianduan/lyh/李炎恢vue工具篇','vue工具篇教程学习笔记'],
-                        ['/qianduan/lyh/李炎恢vue核心篇','vue核心篇教程学习笔记'],
+                        ['/js/lyh/axios&mock','axios&mock学习笔记'],
+                        ['/js/lyh/李炎恢vue工具篇','vue工具篇教程学习笔记'],
+                        ['/js/lyh/李炎恢vue核心篇','vue核心篇教程学习笔记'],
                     ]
                 }
             ],
-            '/PHP/': [
+            '/php/': [
                 {
                     title: '米斯特吴PHP',
                     children:[
-                        ['/PHP/米斯特吴PHP/day01','第一天'],
+                        ['/php/米斯特吴PHP/day01','第一天'],
                     ]
                 },
                 {
                     title: '菜鸟教程PHP',
                     children:[
-                        ['/PHP/noob/菜鸟教程笔记','菜鸟教程PHP笔记'],
+                        ['/php/noob/菜鸟教程笔记','菜鸟教程PHP笔记'],
                     ]
                 },
             ],
@@ -175,6 +176,14 @@ module.exports = {
                     title: '技术书籍',
                     children:[
                         ['/book/Java核心技术卷/Java核心技术卷1','Java核心技术卷1'],
+                    ]
+                }
+            ],
+            '/git/': [
+                {
+                    title: 'git笔记',
+                    children:[
+                        ['/git/git/git','git笔记'],
                     ]
                 }
             ],
