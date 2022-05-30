@@ -26,6 +26,7 @@ module.exports = {
                     {text:"php",link:'/php/'},
                     {text:"linux学习",link:'/linux/'},
                     {text:"git笔记",link:'/git/'},
+                    {text:"中间件",link:'/middleware/'},
                 ]
             },
             {text: '工具网站',items: [
@@ -45,14 +46,20 @@ module.exports = {
             ],
             '/javaFramework/': [
                 {
-                    title: 'SpringMVC',
+                    title: 'springMVC',
                     children:[
-                        ['/javaFramework/SpringMVC/7月11日','第一天'],
-                        ['/javaFramework/SpringMVC/7月12日','第二天'],
-                        ['/javaFramework/SpringMVC/7月14日','第三天'],
-                        ['/javaFramework/SpringMVC/7月16日','第四天'],
+                        ['/javaFramework/springMVC/7月11日','第一天'],
+                        ['/javaFramework/springMVC/7月12日','第二天'],
+                        ['/javaFramework/springMVC/7月14日','第三天'],
+                        ['/javaFramework/springMVC/7月16日','第四天'],
                     ]
-                }
+                },
+                {
+                    title: 'springCloud',
+                    children:[
+                        ['/javaFramework/springCloud/方志朋F版SpringCloud教程','方志朋F版SpringCloud教程'],
+                    ]
+                },
             ],
             '/vuePress/': [
                 {
@@ -184,6 +191,22 @@ module.exports = {
                     title: 'git笔记',
                     children:[
                         ['/git/git/git','git笔记'],
+                    ]
+                }
+            ],
+            '/middleware/': [
+                {
+                    title: '中间件',
+                    children:[
+                        ['/middleware/rabbitmq/rabbitmq','rabbitmq笔记'],
+                    ]
+                }
+            ],
+            '/docker/': [
+                {
+                    title: 'docker笔记',
+                    children:[
+                        ['/docker/deploy/正式服部署完整项目','正式服务器部署项目'],
                     ]
                 }
             ],
