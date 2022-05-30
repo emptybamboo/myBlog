@@ -27,6 +27,7 @@ module.exports = {
                     {text:"linux学习",link:'/linux/'},
                     {text:"git笔记",link:'/git/'},
                     {text:"中间件",link:'/middleware/'},
+                    {text:"docker笔记",link:'/docker/'},
                 ]
             },
             {text: '工具网站',items: [
