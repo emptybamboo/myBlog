@@ -28,6 +28,7 @@ module.exports = {
                     {text:"git笔记",link:'/git/'},
                     {text:"中间件",link:'/middleware/'},
                     {text:"docker笔记",link:'/docker/'},
+                    {text:"nginx笔记",link:'/nginx/'},
                 ]
             },
             {text: '工具网站',items: [
@@ -208,6 +209,14 @@ module.exports = {
                     title: 'docker笔记',
                     children:[
                         ['/docker/deploy/正式服部署完整项目','正式服务器部署项目'],
+                    ]
+                }
+            ],
+            '/nginx/': [
+                {
+                    title: 'nginx笔记',
+                    children:[
+                        ['/nginx/nginx/nginx','nginx笔记'],
                     ]
                 }
             ],
