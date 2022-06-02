@@ -185,6 +185,8 @@ module.exports = {
                     title: '技术书籍',
                     children:[
                         ['/book/Java核心技术卷/Java核心技术卷1','Java核心技术卷1'],
+                        ['/book/On-Java-8/On-Java-8','On-Java-8'],
+                        ['/book/算法图解/算法图解','算法图解'],
                     ]
                 }
             ],

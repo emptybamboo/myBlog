@@ -1,5 +1,13 @@
 # `Nginx`笔记
 
+## 使用
+
+### 更新
+
+- 更新了nginx的配置之后,需要运行`/usr/local/nginx/sbin/nginx -t`命令检查,前面的目录是具体nginx的安装目录
+- 最后运行`/usr/local/nginx/sbin/nginx -s reload`命令重启,前面的目录是具体nginx的安装目录
+- 如果执行过程报错就需要去检查nginx的配置文件内容对应哪里有问题
+
 ## 前后端分离
 
 ### 项目部署
