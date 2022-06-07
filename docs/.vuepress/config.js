@@ -29,6 +29,7 @@ module.exports = {
                     {text:"中间件",link:'/middleware/'},
                     {text:"docker笔记",link:'/docker/'},
                     {text:"nginx笔记",link:'/nginx/'},
+                    {text:"系统架构",link:'/systemArchitecture/'},
                 ]
             },
             {text: '工具网站',items: [
@@ -219,6 +220,15 @@ module.exports = {
                     title: 'nginx笔记',
                     children:[
                         ['/nginx/nginx/nginx','nginx笔记'],
+                    ]
+                }
+            ],
+            '/systemArchitecture/': [
+                {
+                    title: '系统架构',
+                    children:[
+                        ['/systemArchitecture/monomer/smart-doc','smart-doc笔记'],
+                        ['/systemArchitecture/monomer/maven','maven笔记'],
                     ]
                 }
             ],

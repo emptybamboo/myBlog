@@ -537,7 +537,9 @@
 - **Feign**是**自带断路器**的，在D版本的Spring Cloud之后，它**没有默认打开**。需要在**配置文件中配置**打开它
 
   ```yml
-  feign:  hystrix:    enabled: true
+  feign:  
+  	hystrix:    
+  		enabled: true
   ```
 
 - 创建service接口的扩展类,使用`@component`注解注册组件,然后重写service接口方法,方法中写断路时传达错误信息的内容.
@@ -633,7 +635,24 @@
 - yml配置
 
   ```yml
-  eureka:  client:    serviceUrl:      defaultZone: http://localhost:8761/eureka/server:  port: 8769spring:  application:    name: service-zuulzuul:  routes:    api-a:      path: /api-a/**      serviceId: service-ribbon    api-b:      path: /api-b/**      serviceId: service-feign      ##首先指定服务注册中心的地址为http://localhost:8761/eureka/，服务的端口为8769，服务名为service-zuul；以/api-a/ 开头的请求都转发给service-ribbon服务；以/api-b/开头的请求都转发给service-feign服务
+  eureka:
+    client:
+      serviceUrl:
+        defaultZone: http://localhost:8761/eureka/
+  server:
+    port: 8769
+  spring:
+    application:
+      name: service-zuul
+  zuul:
+    routes:
+      api-a:
+        path: /api-a/**
+        serviceId: service-ribbon
+      api-b:
+        path: /api-b/**
+        serviceId: service-feign 
+  ##首先指定服务注册中心的地址为http://localhost:8761/eureka/，服务的端口为8769，服务名为service-zuul；以/api-a/ 开头的请求都转发给service-ribbon服务；以/api-b/开头的请求都转发给service-feign服务
   ```
 
 - 依次运行这五个工程;打开浏览器访问：http://localhost:8769/api-a/hi?name=forezp ;
