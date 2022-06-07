@@ -74,18 +74,23 @@
 
 ### gitattributes
 
-- git的这个功能可以做到,不同的分支切换覆盖时,可以忽略某些文件不把这些文件覆盖给对应的分支
+- git的这个功能可以做到,**不同的分支之间覆盖代码时**,可以**忽略某些文件**不把这些文件覆盖给对应的分支
 
 - 这么说可能有点绕,解释得详细点,某项目有两个分支,A分支和B分支,然后这个项目对接了第三方API,这个API是需要根据当前环境是测试环境还是正式环境进行代码中的一些配置的修改,比如请求的url的前半部分,一些变量
 
 - A分支代表测试环境分支,B分支代表正式环境分支,那在这两个分支中,我们自然会希望代码中的配置不会被我们覆盖修改代码时改变,这种配置代码的文件类一般也很少改动
 
-- 那么我们就需要去新建一个gitattributes文件,在其中根据规则写好我们需要在覆盖分支代码时忽略的文件,然后就不会出现这个问题了,本身我去查询相关知识时,有人说这个功能有一个文件修改时间先后的要求,搞得很麻烦很不方便,但我实际使用时发现不用考虑这个就可以达成效果
+- 那么我们就需要去新建一个gitattributes文件,命名为`.gitattributes`,在其中根据规则写好我们需要在覆盖分支代码时忽略的文件,然后就不会出现这个问题了,本身我去查询相关知识时,有人说这个功能有一个文件修改时间先后的要求,搞得很麻烦很不方便,但我实际使用时发现不用考虑这个就可以达成效果
+
+- gitattributes文件一定是**创建在你需要覆盖别的代码到这个分支的分支**,比如这里就是正式环境分支,只有别的环境往这里合代码,一般这个分支不会把代码覆盖给别的分支
 
 - 我使用的gitattributes文件内容如下
 
   ```
-  
+  # merge时需要忽略的文件
+  financial-leasing-common/src/main/java/com/shineray/financial/common/api/anxinsign/constant/Request.java merge=ours
+  financial-leasing-common/src/main/java/com/shineray/financial/common/api/anxinsign/connector/HttpConnector.java merge=ours
+  financial-leasing-common/src/main/java/com/shineray/financial/common/api/authentication/api/CpcnAuthenticationApi.java merge=ours
   ```
 
   

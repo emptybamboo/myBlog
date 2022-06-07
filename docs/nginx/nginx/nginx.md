@@ -67,11 +67,3 @@
       }
   }
   ```
-
-- 去搜了一般gitlab直接装在linux服务器上的默认地址,找不到
-
-- lsof -i :8082 命令没有反应,说明8082端口没有运行程序,也就是说明gitlab彻底挂了,非运行状态
-
-- whereis gitlab命令也没有反应
-
-- docker ps -a 和docker images 都没有直接叫gitlab的容器或镜像,如果是装在docker里那肯定是起了什么自定义的名字了认不出来哪个是gitlab了...
