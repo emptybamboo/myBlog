@@ -179,7 +179,13 @@ module.exports = {
                     children:[
                         ['/linux/实验楼/实验楼linux','实验楼linux'],
                     ]
-                }
+                },
+                {
+                    title: 'linux问题排查',
+                    children:[
+                        ['/linux/问题/容量','系统容量问题'],
+                    ]
+                },
             ],
             '/book/': [
                 {
