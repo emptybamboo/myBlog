@@ -3,7 +3,7 @@
 - mybatis是国内主流的orm框架,用来使项目和数据库交互
 - mybatis-plus是加强版,在单表操作方面大大方便,只需要调用内置方法即可进行单表的简单查询,还内置分页插件,简单完成分页数据
 
-## 使用
+## 构建
 
 ### 引入项目
 
@@ -90,7 +90,7 @@
 
 - 首先创建**Page对象**,传入每页数据条数pageSize,以及当前页数pageNum作为构造函数的参数
 
-- 如果是自定义查询方法就将**Page对象**作为参数传进去**,设定返回数据为Page格式**,设置好泛型就会自动查询出分页后的数据
+- 如果是自定义查询方法就将**Page对象**作为参数传进去,**设定返回数据为Page格式**,设置好泛型就会自动查询出分页后的数据
 
   ```java
   Page<ManageContractPendingListVO> listVOPage = new Page<>(page.getPageNum(), page.getPageSize());
@@ -210,4 +210,118 @@
       path: /data/logs #logback持久化文件存储目录,配置了它就可以在logback的配置文件中使用${LOG_PATH}取出日志持久化目录地址
   ```
 
+## 项目中使用
+
+### 增
+
+#### 批量新增
+
+- 批量新增有两种处理方式
+
+- 第一种是直接在impl文件中注入service,然后mp的service中自带了批量方法可以使用
+
+- 第二种是自定义,使用注解方式
+
+  ```java
+  @Insert("<script>" +
+          "        INSERT INTO fl_manage_contract_contract_element_relevance \n" +
+          "           (manage_contract_id, manage_contract_element_id, content) \n" +
+          "        VALUES\n" +
+          "        <foreach collection =\"relevanceList\" item=\"relevance\" separator =\",\"> \n" +
+          "            (#{relevance.manageContractId}, #{relevance.manageContractElementId}, #{relevance.content}) \n" +
+          "        </foreach>" +
+          "</script>")
+  Integer saveBatch(@Param("relevanceList") List<ManageContractContractElementRelevance> relevanceList);
+  ```
+
   
+
+### 查
+
+#### 复合查询
+
+- 有的时候有一些复杂情况,不只是简单查询,而是需要**一条查询语句**,**返回的结果中**的**某个字段**是**多条记录组成**的
+
+- 就类似我现在要查一条合同信息,但是我查询的其实是以合同分组为唯一条件筛选,其实查出的这一条数据下有多个合同文件
+
+- 就像是这样的一条数据,可以查出供应商的信息,合同分组的的信息,同时字段contractUrlList代表的是合同分组下的每个合同文件链接组成的List
+
+- 我想要一次查询出这样的数据就需要专门处理
+
+  | records                   | array  | No comments found.                         | -    |
+  | ------------------------- | ------ | ------------------------------------------ | ---- |
+  | └─manageSupplierId        | int32  | 供应商ID                                   | -    |
+  | └─companyName             | string | 企业名称                                   | -    |
+  | └─uniformSocialCreditCode | string | 统一社会信用代码                           | -    |
+  | └─legalPersonName         | string | 企业法人姓名                               | -    |
+  | └─legalPersonIdNum        | string | 法人身份证号                               | -    |
+  | └─legalPersonContact      | string | 法人联系方式,为手机号                      | -    |
+  | └─manageContractGroupId   | int32  | 合同分组id                                 | -    |
+  | └─contractGroupName       | string | 合同分组名                                 | -    |
+  | └─manageUserId            | int32  | 合同创建人ID,也就是管理后台账户ID          | -    |
+  | └─manageUserName          | string | 合同创建人名                               | -    |
+  | └─contractUrlList         | array  | 所有合同url组成的List,这里的合同是docx文件 | -    |
+  | └─createTime              | string | 创建时间                                   | -    |
+
+- 首先需要创建一个interface文件,在其中**自定义**我们的**查询方法**,使用**注解方式**写出完整的查询SQL
+
+- 然后其中一个字段需要查出多条数据的时候,就需要使用更详细的注解
+
+- 首先使用@Results注解在查询方法上,`id`属性其实没有特殊含义,就是给这个查询语句起个名字,起个唯一标识
+
+- 然后再@Results注解之中的`value`值下,使用@Result注解把这条SQL要查出的所有字段都定义出来,`property`属性是字段别名,也就是**数据接收实体类的字段名**,`column`属性是其对应的**数据库字段原名**,id都填true就行
+
+- 其中最特别的那个字段,也就是需要一个字段包含多条数据的字段,需要我们另外查询再塞入这个字段,因为其他字段都是可以统一进一条数据的,但是这个字段会导致这条数据的唯一性被破坏,只能另外查询再带进来
+
+- 这个特别的字段中多出了几个属性,分别是
+
+  - `many`属性后边跟的是`@Many`注解,这个注解的select属性需要填写这个字段的单独查询方法的方法名
+
+  - `javaType`属性填的是这个特别字段的返回数据类型,一般都是`List.class`,因为大多数情况下,单字段返回多条信息的情况才需要这样写
+
+  - `column`属性填的内容就不太一样了,因为另外查询的语句很可能需要一些参数携带,就是从这里传递
+
+    - 如果是传递单个参数就类似:`column = "contractId"`
+
+    - 如果是传递多个参数就类似:`column = "{manageSupplierId=manageSupplierId,manageContractGroupId=manage_contract_group_id}")}`
+
+    - 参数在单独查询方法中使用是这样
+
+      ```java
+      @Select({"SELECT contract.url " +
+          "FROM fl_manage_contract contract",
+               "LEFT JOIN fl_manage_supplier supplier ON supplier.id = contract.manage_supplier_id\n" +
+                   "LEFT JOIN fl_manage_contract_group contract_group ON contract_group.id = supplier.manage_contract_group_id\n" +
+                   "WHERE contract.manage_supplier_id=#{manageSupplierId}\n" +
+                   "AND supplier.manage_contract_group_id=#{manageContractGroupId}\n" +
+                   "AND contract.del_flag=0\n" +
+                   "AND supplier.del_flag=0\n" +
+                   "AND contract_group.del_flag=0 "
+              })
+      List<String> getPendingContractUrlList(@Param("manageSupplierId") String manageSupplierId, @Param("manageContractGroupId") String manageContractGroupId);
+      ```
+
+#### and和or(方法调用)
+
+- mp方法调用单表查询有时需要用到and和or,处理方法也很简单
+
+  ```java
+  QueryWrapper<SignOpenAccountRecord> wrapperRecord = new QueryWrapper<>();
+  wrapperRecord.eq("relevance_id", supplier.getId())
+      .eq("del_flag", DelStatusEnum.DELETE_NO.getCode())
+      .and(wrapper -> wrapper.eq("role_type", SignOpenAccountRoleTypeEnum.COMPANY.getCode()).or().eq("role_type", SignOpenAccountRoleTypeEnum.LEGAL_PERSON.getCode()))
+      ;
+  List<SignOpenAccountRecord> recordsCompanyAndLegal = signOpenAccountRecordMapper.selectList(wrapperRecord);
+  ```
+
+  
+
+### 删
+
+### 改
+
+#### 批量更新
+
+- 批量新增有两种处理方式
+- 第一种是直接在impl文件中注入service,然后mp的service中自带了批量方法可以使用
+- 第二种是自定义,使用注解方式,类似批量新增
