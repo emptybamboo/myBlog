@@ -63,6 +63,12 @@ module.exports = {
                         ['/javaFramework/springCloud/方志朋F版SpringCloud教程','方志朋F版SpringCloud教程'],
                     ]
                 },
+                {
+                    title: 'mybatis',
+                    children:[
+                        ['/javaFramework/mybatis/mybatis-plus','MyBatis-Plus笔记'],
+                    ]
+                },
             ],
             '/vuePress/': [
                 {
