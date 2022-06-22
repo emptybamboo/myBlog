@@ -209,7 +209,13 @@ module.exports = {
                     children:[
                         ['/git/git/git','git笔记'],
                     ]
-                }
+                },
+                {
+                    title: 'svn笔记',
+                    children:[
+                        ['/git/svn/svn','svn笔记'],
+                    ]
+                },
             ],
             '/middleware/': [
                 {
