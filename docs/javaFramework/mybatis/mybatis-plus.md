@@ -314,6 +314,24 @@
   List<SignOpenAccountRecord> recordsCompanyAndLegal = signOpenAccountRecordMapper.selectList(wrapperRecord);
   ```
 
+
+#### 查询结果数量错误,并且后几次查询不打印SQL
+
+- 有一次我的代码里会连续执行两次查询语句,基本是一样的查询语句,但是正常来说这两次查出的结果也是一样的
+
+- 第一次查询出13条,第二次只查询出3条,而且第一次会打印SQL,第二次SQL都不打印了,我是正确配置了Mybatis-plus的打印日志的
+
+- 经过搜索以及群的询问,最后得出结论,关闭Mybatis的缓存即可,我不知道是需要一二级缓存全关闭还是关一个就行,所以就全关闭了
+
+  ```yml
+  mybatis-plus:
+    configuration:
+      log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl #开启sl4j的sql日志
+  #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启控制台sql日志
+      cache-enabled: false #禁用二级缓存
+      local-cache-scope: statement #一级缓存指定为statement级别
+  ```
+
   
 
 ### 删
