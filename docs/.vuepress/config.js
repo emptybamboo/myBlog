@@ -230,6 +230,8 @@ module.exports = {
                     title: 'docker笔记',
                     children:[
                         ['/docker/deploy/正式服部署完整项目','正式服务器部署项目'],
+                        ['/docker/compose/docker-compose','docker-compose笔记'],
+                        ['/docker/skill/word转pdf','docx转pdf'],
                     ]
                 }
             ],
