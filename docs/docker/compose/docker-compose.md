@@ -157,7 +157,7 @@ $ docker-compose build --no-cache # 不带缓存的构建
 $ docker-compose build -f docker-compose1.yml
 
 # 列出Compose文件构建的镜像
-$ docker-compose images                          
+$ docker-compose images            	              
 
 # 启动所有编排容器服务
 $ docker-compose up -d

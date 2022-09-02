@@ -44,6 +44,7 @@ module.exports = {
                         ['/javaBasics/集合框架/集合框架','集合框架知识'],
                         ['/javaBasics/核心技术卷I/字符串','字符串'],
                         ['/javaBasics/廖雪峰/Java-廖雪峰','廖雪峰博客学习'],
+                        ['/javaBasics/廖雪峰/多线程','多线程'],
                     ]
                 }
             ],

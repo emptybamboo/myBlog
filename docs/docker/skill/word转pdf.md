@@ -607,11 +607,12 @@ RUN sed -i 's|security.debian.org/debian-security|mirror.sjtu.edu.cn/debian-secu
   ```shell
   #!/bin/bash
   source /etc/profile
+  # -o是代表默认覆盖解压当前目录下同名的文件,-d是不解压在当前文件夹,解压到指定文件夹下
   unzip -o -d /usr/share/fonts /data/pdf/windows-font.zip
   mkfontscale
   mkfontdir
   fc-cache
-  java -Djava.security.egd=file:/dev/./urandom -jar /data/package/app.jar
+  java -Djava.security.egd=file:/dev/./urandom -jar -Duser.timezone=GMT+8 /data/package/app.jar
   
   ```
 
@@ -636,3 +637,39 @@ RUN sed -i 's|security.debian.org/debian-security|mirror.sjtu.edu.cn/debian-secu
 - 如果出现这个基本上是脚本的编码格式有问题,里面有windows系统的换行符
 - `cat -A sh脚本地址`,就可以看出,如果脚本中有^M,就需要编辑删掉
 - `vim -b sh脚本地址 `,按下i进入编辑模式删掉符号,`:wq`保存并退出即可
+
+#### libreoffice版本较低,转换格式有问题
+
+- 之前安装的libreoffice版本都是6.1,比较低,导致转换出的格式会有一些问题
+
+- 经过查询,我找到了问题的解决方法
+
+- 首先,apt-get install命令安装的libreoffice就是6.1版本的,没法安装更高的版本
+
+- 官网告诉我的安装方法是,首先下载[linux64位安装包](https://www.libreoffice.org/donate/dl/deb-x86_64/7.2.7/zh-CN/LibreOffice_7.2.7_Linux_x86-64_deb.tar.gz),可以用tar命令在linux解压也可在windows上手动解压把解压出的文件夹拖进docker映射的某个文件夹
+
+- cd命令进入解压后的文件夹所在目录
+
+  ```shell
+  # 切换到安装包所在的目录
+  $ cd ~/下载/
+  
+  # 安装主安装程序的所有deb包
+  $ sudo dpkg -i ./LibreOffice_X.Y.Z_Linux_x86_deb/DEBS/*.deb
+  # 使用这个dpkg -i ./LibreOffice_7.2.7.2_Linux_x86-64_deb/DEBS/*.deb
+  ```
+
+- 然后其实上是安装到了容器里的linux系统的`/opt/libreoffice7.2`目录,如果要执行,必须`/opt/libreoffice7.2/program/soffice 命令`这样执行
+
+- 比如`/opt/libreoffice7.2/program/soffice --headless --convert-to pdf /data/pdf/抵押合同.docx --outdir /data/pdf`
+
+- 之前是在Dockerfile中用RUN的shell命令行安装了libreoffice的,现在既然我们使用wget下载了deb格式的libreoffice的安装包,那就应该不要再去使用`apt-get`安装了,这样等于是安装了一个6.1版本,又安装了一个7.2版本
+
+- 但是当我去掉RUN后面的apt-get install libreoffice之后,构建镜像就出现了问题开始报错
+
+- 最后经过研究,如果要去掉apt-get安装libreoffice,就不能同时安装`ttf-mscorefonts-installer`,不安装这个就没法执行mkfontscale
+  和mkfontdir命令
+
+- 不执行这两个命令,运行7.2版本的libreoffice时会报错,只需要安装`libxinerama-dev`和`ibus`就可以解决问题
+
+- 这样一来,除了转换PDF速度稍慢,大概是4秒变为5秒,其他的转换PDF功能都可以正常进行了
