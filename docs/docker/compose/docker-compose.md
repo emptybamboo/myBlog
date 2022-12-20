@@ -115,6 +115,8 @@
 
 ## 安装
 
+### docker-compose
+
 - windows系统安装docker桌面版是直接自带docker-compose的,但是linux必须自己去安装
 
 - 一般服务器都是centos,我们的服务器是centos8版本
@@ -145,6 +147,20 @@
   [root@server01 docker]# docker-compose version
   Docker Compose version v2.6.1
   ```
+
+### docker
+
+- 服务器是买的阿里云计算型c7,centos7.9版本
+
+- [使用官方脚本自动安装](https://www.runoob.com/docker/centos-docker-install.html)
+
+  ```shell
+  curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+  ```
+
+- 然后安装一切正常,但是如果运行`docker --version`会报错`Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?`
+
+- 这是因为[安装完没在系统中启动](https://blog.csdn.net/weixin_45496075/article/details/109123709),只需要运行`systemctl start docker`即可
 
 ## 命令
 

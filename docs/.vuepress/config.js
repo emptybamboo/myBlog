@@ -112,6 +112,8 @@ module.exports = {
                         ['/sql/mysql/随笔随记','MySQL知识随笔'],
                         ['/sql/mysql/索引','MySQL索引'],
                         ['/sql/mysql/锁知识','MySQL锁'],
+                        ['/sql/mysql/docker-compose安装mysql','docker-compose安装mysql'],
+                        ['/sql/redis/docker-compose安装redis','docker-compose安装redis'],
                     ]
                 }
             ],
