@@ -139,6 +139,7 @@ module.exports = {
                     children:[
                         ['/js/js/js基础笔记','js基础知识笔记'],
                         ['/js/js/js高级笔记','js高级知识笔记'],
+                        ['/js/ts/ts','typescript基础笔记'],
                     ]
                 },
                 {
@@ -153,6 +154,12 @@ module.exports = {
                         ['/js/lyh/axios&mock','axios&mock学习笔记'],
                         ['/js/lyh/李炎恢vue工具篇','vue工具篇教程学习笔记'],
                         ['/js/lyh/李炎恢vue核心篇','vue核心篇教程学习笔记'],
+                    ]
+                },
+                {
+                    title: 'vue',
+                    children:[
+                        ['/js/vue/vue3.0','vue3.0笔记'],
                     ]
                 }
             ],
