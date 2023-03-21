@@ -1024,7 +1024,14 @@ alert(str);
 ### 值绑定
 
 - 对于单选按钮，复选框和选择器选项，`v-model` 绑定的值通常是静态的字符串 (或者对复选框是布尔值)
-- 但有时我们可能希望将该值绑定到当前组件实例上的动态数据。这可以通过使用 `v-bind` 来实现。此外，使用 `v-bind` 还使我们可以将选项值绑定为非字符串的数据类型。
+- 但有时我们可能希望将该值**绑定**到当前组件实例上的**动态数据**。这可以通过**使用 `v-bind` 来实现**。此外，使用 `v-bind` 还使我们可以将选项值绑定为非字符串的数据类型。
+
+> 啥叫动态数据?
+>
+> 你去绑定`<div name="王老五"></div>`这样写死的数据就叫静态
+>
+> 绑定`<div :name="customer.name"></div>`这样传入的参数,就叫动态数据
+
 - `v-model` 和 `v-bind` 都是用来实现数据绑定的指令，但它们的应用场景略有不同。`v-model` 适用于表单元素等需要实现双向数据绑定的场景，而 `v-bind` 则更加灵活，适用于需要动态绑定属性的各种场景`(即可以绑定value,也可以绑定什么text,class之类的属性)`。
 
 #### 复选框
@@ -1830,5 +1837,962 @@ forRef:{{JSON.stringify(forRef)}}
 
 ## props
 
+- Vue3声明式API中,使用 `defineProps()` 宏来声明props
+
+- 除了使用字符串数组来声明 prop 外，还可以使用对象的形式
+
+  ```vue
+  // 使用 <script setup>
+  defineProps({
+    title: String,
+    likes: Number
+  })
+  ```
+
+- 对于以对象形式声明中的每个属性，key 是 prop 的名称，而值则是该 prop 预期类型的构造函数。
+
+### 细节
+
+#### props名字格式
+
+- 总结一句话就是组件名一般是大驼峰,组件上用属性传递props用小横杠隔开,子组件接收props用小驼峰
+
+  ```vue
+  <PropSon/>//组件名,大驼峰
+  <PropSon :usual-intake="usualIntake" :reward-that="rewardThat"/>//组件上父传子组件属性,横杠隔开
+  //子组件接收,小驼峰
+  const props = defineProps({
+    usualIntake: Number,
+    rewardThat: Array
+  });
+  ```
+
+#### 静态vs动态
+
+- 静态就是在标签上直接属性=值
+
+- 动态就是v-bind:属性=值/变量
+
+  ```html
+  <BlogPost title="My journey with Vue" />
+  
+  <!-- 根据一个变量的值动态传入 -->
+  <BlogPost :title="post.title" />
+  
+  <!-- 根据一个更复杂表达式的值动态传入 -->
+  <BlogPost :title="post.title + ' by ' + post.author.name" />
+  ```
+
+#### 不同类型
+
+- **任何**类型的值都可以作为 props 的值被传递。
+- 但是要注意,静态传递的全都会被当成字符串,一旦不是传递字符串格式的值,统统动态传递
+
+> 不是字符串的值就等于一个JS表达式了,表达式就是可以写在return后边的句子
+
+- 使用一个对象可以一次绑定多个props,对象的属性名就是props名,对象的值就是props的值
+
+- 父组件
+
+  ```vue
+  <template>
+  <PropSon :name="name" :usual-intake="usualIntake" :age="47" :is-man="true" :book="{name:'三体',num:120000}" :reward-that="rewardThat"
+           v-bind="me" :mouth="undefined" :person="666" are-you-sure/>
+  </template>
+  <script setup>
+  const name = ref(666)
+  const usualIntake = ref(3362)
+  const rewardThat = ["萧强","孢子","刘老六"];
+  const me = {
+  high: 182,
+  weight: 194
+  };
+  </script>
+  ```
+
+- 子组件
+
+  ```vue
+  <template>
+    <p>我是子组件PropSon</p>
+    <p>限定类型部分,name:{{name}},age:{{age}},isMan:{{isMan}},usualIntake:{{usualIntake}},book:{{book}},rewardThat:{{rewardThat}},rewardThat:{{high}},weight:{{weight}}</p>
+    <p>修改props的特殊情况,单独生成ref变量:{{sonName}},计算属性:{{computeName}}</p>
+    <p>props校验,gender:{{gender}},mouth:{{mouth}},person:{{person}}</p>
+    <p>Boolean类型转换:{{areYouSure}}</p>
+  </template>
+  
+  <script setup>
+  import {computed, ref} from "vue";
+  import {Person} from "./person.js"
+  const props = defineProps({
+    name: String,
+    age: Number,
+    isMan: Boolean,
+    usualIntake: Number,
+    book: Object,
+    rewardThat: Array,
+    high: Number,
+    weight: Number,
+    snack: {
+      required:true,
+      type: String
+    },
+    gender:{
+      type:String,
+      default:"男"
+    },
+    mouth:{
+      type:String,
+      default:"罗技302"
+    },
+    person:Person,
+    //无论声明类型的顺序如何，Boolean 类型的特殊转换规则都会被应用
+    areYouSure:[Number,Boolean]
+  });
+  // props.name = "刘德华";
+  const sonName = ref(props.name);
+  const computeName = computed(()=>{
+    return "开头-" + props.name + "-结尾"
+  });
+  //不能在 <script setup> 中的 defineProps() 函数中引用本地声明的变量，因为它将被提升到 setup() 函数之外。如果您的组件选项需要在模块作用域内进行初始化，则可以使用单独的普通 <script> 来导出选项。
+  // class Person{
+  //   constructor(firstName,lastName) {
+  //     this.firstName = firstName;
+  //     this.lastName = lastName;
+  //   }
+  // }
+  </script>
+  
+  ```
+
+### 单向数据流
+
+- 所有的 props 都遵循着**单向绑定**原则，props 因父组件的更新而变化，自然地将新的状态向下流往子组件，而不会逆向传递。这避免了子组件意外修改父组件的状态的情况，不然应用的数据流将很容易变得混乱而难以理解。
+
+> 简单一句话,传到子组件的props值不允许修改
+
+- 只有两种情况是例外
+
+  - 想把props的值作为一个局部数据
+
+    ```vue
+    <script setup>
+        const props = defineProps({
+            name: String,
+        })
+        const sonName = ref(props.name);
+    </script>
+    ```
+
+    
+
+  - 需要对传入的props值进行进一步转换
+
+    ```vue
+    <script setup>
+        props = defineProps({
+            name: String,
+        })
+        const computeName = computed(()=>{
+            return "开头-" + props.name + "-结尾"
+        });
+    </script>
+    ```
+
+    
+
+### props校验
+
+- 要声明对 props 的校验，你可以向 `defineProps()` 宏提供一个带有 props 校验选项的对象，例如
+
+- ```vue
+  <script setup>
+  import {Person} from "./person.js"
+  const props = defineProps({
+    snack: {
+      required:true,
+      type: String
+    },
+    gender:{
+      type:String,
+      default:"男"
+    },
+    mouth:{
+      type:String,
+      default:"罗技302"
+    },
+    person:Person,
+    //无论声明类型的顺序如何，Boolean 类型的特殊转换规则都会被应用
+    areYouSure:[Number,Boolean]
+  });
+  // props.name = "刘德华";
+  const sonName = ref(props.name);
+  const computeName = computed(()=>{
+    return "开头-" + props.name + "-结尾"
+  });
+  //不能在 <script setup> 中的 defineProps() 函数中引用本地声明的变量，因为它将被提升到 setup() 函数之外。如果您的组件选项需要在模块作用域内进行初始化，则可以使用单独的普通 <script> 来导出选项。
+  // class Person{
+  //   constructor(firstName,lastName) {
+  //     this.firstName = firstName;
+  //     this.lastName = lastName;
+  //   }
+  // }
+  </script>
+  ```
+
+> `defineProps()` 宏中的参数**不可以访问 `<script setup>` 中定义的其他变量**，因为在编译时整个表达式都会被移到外部的函数中。
+>
+> 案例就是我上面代码里写在 `<script setup>` 中的Person类
+
+- 所有 prop 默认都是可选的，除非声明了 `required: true`。
+
+- 除 `Boolean` 外的未传递的可选 prop 将会有一个默认值 `undefined`。
+
+- `Boolean` 类型的未传递 prop 将被转换为 `false`。这可以通过为它设置 `default` 来更改——例如：设置为 `default: undefined` 将与非布尔类型的 prop 的行为保持一致。
+
+- 如果声明了 `default` 值，那么在 prop 的值被解析为 `undefined` 时，无论 prop 是未被传递还是显式指明的 `undefined`，都会改为 `default` 值。
+
+- **不符合类型**的都会在F12的console里**显示黄色警告**
+
+  ```
+  这个是设定了name为string类型,却传了666的值
+  Vue warn]: Invalid prop: type check failed for prop "name". Expected String with value "666", got Number with value 666. 
+  at <PropSon name=666 usual-intake=3362 age=47  ... > 
+  at <PropFather> 
+  at <App>
+  这个是设置了snack为required:true却没有从父组件中传递
+  [Vue warn]: Missing required prop: "snack" 
+  at <PropSon name=666 usual-intake=3362 age=47  ... > 
+  at <PropFather> 
+  at <App>
+  这个是设置了person的类结构,传过来的值却是个666
+  [Vue warn]: Invalid prop: type check failed for prop "person". Expected Person, got Number with value 666. 
+  at <PropSon name=666 usual-intake=3362 age=47  ... > 
+  at <PropFather> 
+  at <App>
+  ```
+
+### Boolean类型转换
+
+- 但凡是设置为Boolean的类型的props,如果直接写这个属性名在组件标签上,默认就是true值,不写就是false值
+
+  ```html
+  <!-- 等同于传入 :disabled="true" -->
+  <MyComponent disabled />
+  
+  <!-- 等同于传入 :disabled="false" -->
+  <MyComponent />
+  ```
+
+- 当一个 prop 被声明为允许多种类型时,无论声明类型的顺序如何，`Boolean` 类型的特殊转换规则都会被应用。
+
+  ```vue
+  defineProps({
+    disabled: [Boolean, Number]
+  })
+  ```
+
+> 意思就是设置某个props可以为多种类型,但是其中一种有Boolean,那么此时如果直接写这个属性名在组件标签上,默认就是true值,不写就是false值
+
+## 事件
+
+- 组件的事件监听器也可以加修饰符,比如`.once`
+
+  ```vue
+  <TextZone @bigger.once="bigger"/>
+  ```
+
+- 像组件与 prop 一样，事件的名字也提供了自动的格式转换。注意这里我们触发了一个以小驼峰形式命名的事件，但在父组件中可以使用横杠分隔形式来监听。与 [prop 大小写格式](https://cn.vuejs.org/guide/components/props.html#prop-name-casing)一样，在模板中我们也推荐使用横杠分隔形式来编写监听器。
+
+  ```vue
+  <!--父组件中,传递过来的小驼峰命名的事件名,在子组件标签上写的时候写为小横杠隔开的格式可以被自动对应上-->
+  <TextZone @bigger.once="bigger" @small="small" @print-str="printStr"/>
+  
+  <script setup>
+  const printStr = (str)=>{
+    console.log(`父组件的printStr方法中得到的字符串:${str.value}`)
+  }
+  </script>
+  ```
+
+  ```vue
+  <!--子组件中,传递到父组件的事件名应该是小驼峰命名-->
+  <input type="text" @keyup="printStr" v-model="inputStr">
+  
+  <script setup>
+  const inputStr = ref("");
+  const num = ref(0.2);
+  const emits = defineEmits({
+    bigger: (num) => {
+      //这里是参数验证,返回的如果是false,则验证不通过,效果就是会在F12的console后台报一条黄色[Vue warn]: Invalid event arguments: event validation failed for event "bigger".
+      //如果是返回true则验证通过
+      return (num > 0.2);
+    },
+    small: null,
+    //这里如果直接在方法体里使用本文件script中定义的局部变量会报错
+    printStr: (str) => {
+      return typeof str === "string" && str.value.length > 0
+    }
+  })
+  const printStr = () => {
+    console.log(`触发printStr方法`)
+    emits('printStr', inputStr);
+  }
+  </script>
+  ```
+
+### 声明触发的事件
+
+- 在Vue3组合式API中,使用 [`defineEmits()`](https://cn.vuejs.org/api/sfc-script-setup.html#defineprops-defineemits) 宏来声明它要触发的事件,然后需要在函数中调用emit()方法把事件实际传递到父组件监听
+  - 如果只使用defineEmits而不使用emit()，那么组件就无法向父组件发送任何事件，因为emit()是触发事件的函数。
+  - 如果只使用emit()而不使用defineEmits或emits选项，那么组件就无法清晰地声明它可以发出的事件，这可能会导致代码混乱和缺乏文档。另外，在Vue 3中，如果没有在emits选项中定义事件，那么它们将被视为原生事件，并且不能被父组件的v-on监听器捕获。
+
+```VUE
+<template>
+  <div>
+    <h4>吴 加 亮 布 四 斗 五 方 旗 　 宋 公 明 排 九 宫 八 卦 阵</h4>
+    <p>御 营 中 选 到 左 羽 右 翼 良 将 二 员 为 中 军 ， 那 二 人 ： 御 前 飞
+      龙 大 将 酆 美 ； 御 前 飞 虎 大 将 毕 胜 。</p>
+    <!--    <button @click="$emit('bigger')">放大字体</button>-->
+    <button @click="bigger">放大字体</button>
+    <button @dblclick="small">缩小字体</button>
+  </div>
+</template>
+
+<script setup>
+import {ref} from "vue";
+
+const num = ref(0.2);
+//这里是声明有哪些事件要传到父组件
+const emits = defineEmits(['bigger','small']);
+//在这里是实际使用emit传递事件到父组件监听
+const bigger = () => {
+  console.log(`触发bigger方法`)
+  emits('bigger', num);
+}
+const small = () => {
+  console.log(`触发small方法`)
+  //这里如果直接传递0..2,到父组件中参数会被识别为字符串,导致做加减法的时候会把数字变为NaN,使用ref包裹则没有这个问题
+  emits('small', ref(0.2), 666)
+}
+</script>
+```
+
+```vue
+<!--父组件接收事件,并完成在父类中的具体实现-->
+<TextZone @bigger.once="bigger" @small="small"/>
+<script setup>
+const bigger = (num)=>{
+  console.log(`父组件的bigger方法参数:${JSON.stringify(num)}`)
+  console.log(`父组件的bigger方法前:${fontSize.value}`)
+  fontSize.value += num.value;
+  console.log(`父组件的bigger方法后:${fontSize.value}`)
+}
+const small = (num,printNum)=>{
+  console.log(`父组件的small方法前:${fontSize.value}`)
+  fontSize.value -= num.value;
+  console.log(`父组件的small方法后:${fontSize.value}`)
+  console.log(`父组件中small方法打印参数为:${printNum}`)
+}
+</script>
+```
 
 
+
+> 如果一个原生事件的名字 (例如 `click`) 被定义在 `emits` 选项中，则监听器只会监听组件触发的 `click` 事件而不会再响应原生的 `click` 事件。
+
+### 事件校验
+
+- 和对 props 添加类型校验的方式类似，所有触发的事件也可以使用**对象形式**来描述。
+
+- 要为事件添加校验，那么事件可以被赋值为一个函数，**接受的参数**就是抛出事件时**传入 `emit` 的内容**，**返回一个布尔值**来表明事件是否合法。
+
+  ```vue
+  <template>
+    <div>
+      <h4>吴 加 亮 布 四 斗 五 方 旗 　 宋 公 明 排 九 宫 八 卦 阵</h4>
+      <p>御 营 中 选 到 左 羽 右 翼 良 将 二 员 为 中 军 ， 那 二 人 ： 御 前 飞
+        龙 大 将 酆 美 ； 御 前 飞 虎 大 将 毕 胜 。</p>
+      <!--    <button @click="$emit('bigger')">放大字体</button>-->
+      <button @click="bigger">放大字体</button>
+      <button @dblclick="small">缩小字体</button>
+      <input type="text" @keyup="printStr" v-model="inputStr">
+    </div>
+  </template>
+  
+  <script setup>
+  import {ref} from "vue";
+  
+  const inputStr = ref("");
+  const num = ref(0.2);
+  //使用对象形式,就可以做事件参数校验了
+  const emits = defineEmits({
+    bigger: (num) => {
+      //这里是参数验证,返回的如果是false,则验证不通过,效果就是会在F12的console后台报一条黄色[Vue warn]: Invalid event arguments: event validation failed for event "bigger".
+      //如果是返回true则验证通过
+      return (num > 0.2);
+    },
+    small: null,
+    //这里如果直接在方法体里使用本文件script中定义的局部变量会报错
+    printStr: (str) => {
+      return typeof str === "string" && str.value.length > 0
+    }
+  })
+  const bigger = () => {
+    console.log(`触发bigger方法`)
+    emits('bigger', num);
+  }
+  const small = () => {
+    console.log(`触发small方法`)
+    //这里如果直接传递0..2,到父组件中参数会被识别为字符串,导致做加减法的时候会把数字变为NaN,使用ref包裹则没有这个问题
+    emits('small', ref(0.2), 666)
+  }
+  const printStr = () => {
+    console.log(`触发printStr方法`)
+    emits('printStr', inputStr);
+  }
+  </script>
+  ```
+
+  ```vue
+  <!--父组件中实现具体事件-->
+  <TextZone @bigger.once="bigger" @small="small" @print-str="printStr"/>
+  <script setup>
+  const bigger = (num)=>{
+    console.log(`父组件的bigger方法参数:${JSON.stringify(num)}`)
+    console.log(`父组件的bigger方法前:${fontSize.value}`)
+    fontSize.value += num.value;
+    console.log(`父组件的bigger方法后:${fontSize.value}`)
+  }
+  const small = (num,printNum)=>{
+    console.log(`父组件的small方法前:${fontSize.value}`)
+    fontSize.value -= num.value;
+    console.log(`父组件的small方法后:${fontSize.value}`)
+    console.log(`父组件中small方法打印参数为:${printNum}`)
+  }
+  const printStr = (str)=>{
+    console.log(`父组件的printStr方法中得到的字符串:${str.value}`)
+  }
+  </script>
+  ```
+
+  
+
+## 组件v-model
+
+- 之前我还有疑惑,Vue官方明明是不希望组件内修改外部传入的数据,为啥官方教程里还在教组件的v-model双向绑定?
+- 之后才明白,Vue官方教程里的**组件的v-model**双向绑定**并不是真正的修改外部传入的数据**，而是通过**触发一个事件来通知父组件更新数据**。这样做的好处是可以让父组件对数据的变化有更多的控制权，也可以避免子组件直接修改父组件的状态而导致不可预期的结果。所以，v-model指令在组件上其实是一个语法糖，它相当于传递了一个prop和监听了一个事件。
+
+- 组件的双向绑定不是简单的在子组件的标签上加一个v-model就可以完成的,因为已经跨组件了
+- 这里举例子组件内部是一个输入框,双向绑定父组件中的一个属性,组件内部需要做两件事：
+  1. 将内部原生 `<input>` 元素的 `value` attribute 绑定到 `modelValue` prop
+  2. 当原生的 `input` 事件触发时，触发一个携带了新值的 `update:modelValue` 自定义事件
+
+```vue
+<!--子组件-->
+<template>
+<div>
+    <input :value="modelValue" @input="$emit('update:modelValue',$event.target.value)"/>
+    </div>
+</template>
+
+<script setup>
+    //默认方式实现组件v-model
+    defineProps(["modelValue"]);
+    defineEmits(["update:modelValue"]);
+</script>
+
+<style scoped>
+
+</style>
+
+```
+
+```vue
+<!--父组件-->
+<p>组件v-model</p>
+<div>本身这个框绑定的value值:{{onlyElementModelValue}}</div>
+<ElementModel v-model="onlyElementModelValue" />
+
+<script>
+    //组件v-model
+    const onlyElementModelValue = ref("");
+</script>
+```
+
+- **一定要注意**,这里父组件中我们是直接使用的`v-model=某个属性`,因此这是**没指定传输的数据名称**的,所以在**子组件中接收的数据名称**是**固定的`modelValue`**,一个字母都不能错,错了就识别不出来,input元素的**更新数据方法也是固定格式**,`update:数据名称`,默认就是`update:modelValue`
+
+- 还有一种方式可以实现组件内v-model,使用一个可写的，同时具有 getter 和 setter 的 `computed` 属性。`get` 方法需返回 `modelValue` prop，而 `set` 方法需触发相应的事件
+
+  ```vue
+  <template>
+    <div>
+      <input  v-model="value"/>
+    </div>
+  </template>
+  
+  <script setup>
+     import {computed} from "vue";
+    computed方式实现组件v-model
+     const prop = defineProps(["modelValue"]);
+     const emit = defineEmits(["update:modelValue"])
+    
+     const value = computed({
+       get(){
+         return prop.modelValue;
+       },
+       set(value){
+         emit("update:modelValue",value)
+       }
+     });
+  </script>
+  
+  <style scoped>
+  
+  </style>
+  
+  ```
+
+### 参数
+
+- **默认情况**下，`v-model` 在组件上都是**使用 `modelValue` 作为 prop**，并以 `update:modelValue` 作为对应的事件。我们可以通过给 `v-model` 指定一个参数来**更改这些名字**,指定的方式就是在`v-model`后面加个冒号然后跟自定义的prop名
+
+- 在这个例子中，子组件应声明一个 `title` prop，并通过触发 `update:title` 事件更新父组件值
+
+  ```vue
+  <!--子组件-->
+  <template>
+    <div>
+      <!--v-model同时指定属性名称-->
+      <input :value="title" @input="$emit('update:title',$event.target.value)"/>
+    </div>
+  </template>
+  
+  <script setup>
+     defineProps(["title"]);
+     defineEmits(["update:title"]);
+  </script>
+  
+  <style scoped>
+  
+  </style>
+  
+  ```
+
+  ```vue
+  <!--父组件-->
+  <p>组件v-model</p>
+  <div>本身这个框绑定的title值:{{onlyElementModelTitle}}</div>
+  <ElementModel v-model:title="onlyElementModelTitle" />
+  
+  <script>
+      //组件v-model
+      const onlyElementModelTitle = ref("");
+  </script>
+  ```
+
+### 绑定多个v-model
+
+- 参数部分已经知道可以自定义prop名,从而等于自定义事件名,这样就可以在单个组件上创建多个`v-model`双向绑定
+
+  ```vue
+  <!--子组件-->
+  <template>
+    <div>
+      <!--默认方式实现组件v-model-->
+      <input :value="modelValue" @input="$emit('update:modelValue',$event.target.value)"/>
+      <!--v-model同时指定属性名称-->
+      <input :value="title" @input="$emit('update:title',$event.target.value)"/>
+    </div>
+  </template>
+  
+  <script setup>
+     defineProps(["modelValue","title"]);
+     defineEmits(["update:modelValue","update:title"]);
+  </script>
+  
+  <style scoped>
+  
+  </style>
+  
+  ```
+
+  ```vue
+  <!--父组件-->
+  <p>组件v-model</p>
+  <div>本身这个框绑定的value值:{{onlyElementModelValue}},本身这个框绑定的title值:{{onlyElementModelTitle}}</div>
+  <ElementModel v-model:title="onlyElementModelTitle" v-model="onlyElementModelValue"/>
+  
+  <script>
+      //组件v-model
+      const onlyElementModelValue = ref("");
+      const onlyElementModelTitle = ref("");
+  </script>
+  ```
+
+### v-model修饰符
+
+- 之前学习输入绑定,知道了`v-model`有很多内置修饰符,但是有时候我们可能需要一个自定义修饰符
+- 举个例子,现在要创建一个叫big的修饰符,会让输入框输入的字符串第一个字母变为大写
+- 组件标签上的v-model上添加的修饰符可以通过组件内部 `modelModifiers` prop 在组件内访问到
+
+> 要注意,modelModifiers要通过对象形式取到,而且**名字**也是**固定**的,类似之前的modelValue
+
+- 下面的组件中我们声明了 `modelModifiers` 这个 prop，它的默认值是一个空对象
+
+- 在模板中的 `v-model` 绑定 `v-model.big="某个响应式对象"` 上被使用了。所以这时的`props.modelModifiers`对象中,包含了big修饰符,且值为true.`console.log(props.modelModifiers) *// { big: true }*`
+
+- 有了这个 prop，我们就可以检查 `modelModifiers` 对象的键，并编写一个处理函数来改变抛出的值。
+
+  ```vue
+  <template>
+  <div>
+      <!--自定义修饰符-->
+      <input type="text" :value="modelValue" @input="emitValue"/>
+      </div>
+  </template>
+  
+  <script setup>
+      //自定义修饰符
+      const prop = defineProps({
+          modelValue:String,
+          //这里定义出自定义修饰符
+          modelModifiers:{
+              default:()=>{}
+          }
+      });
+      const emit = defineEmits(["update:modelValue"]);
+      //input输入文字时,触发自定义函数,进行数据的修改以及抛出事件给父组件,让父组件修改源数据
+      function emitValue(e){
+          let value = e.target.value;
+          if(prop.modelModifiers.big){
+              value = value.charAt(0).toUpperCase() + value.slice(1);
+          }
+          emit("update:modelValue",value);
+      }
+  </script>
+  
+  <style scoped>
+  
+  </style>
+  
+  ```
+
+  ```vue
+  <!--父组件-->
+  <ElementModel v-model.big="onlyElementModelValue"/>
+  ```
+
+  
+
+- 对于又有参数又有修饰符的 `v-model` 绑定，生成的 prop 名将是 `arg + "Modifiers"`。
+
+> 意思就是,同时自定义了参数名和自定义修饰符,传入子组件中的自定义修饰符对象的名字就会是`参数名+Modifiers`
+>
+> 比如`v-model:title.big`,生成的自定义修饰符对象名字就是`titleModifiers`
+
+```vue
+<template>
+  <div>
+    <!--同时指定v-model属性名+自定义修饰符-->
+    <input type="text" :value="title" @input="$emit('update:title',$event.target.value)"/>
+  </div>
+</template>
+
+<script setup>
+//同时指定v-model属性名+自定义修饰符
+  const prop = defineProps(["title","titleModifiers"]);
+ defineEmits(["update:title"])
+</script>
+
+<style scoped>
+
+</style>
+
+```
+
+```vue
+<!--父组件-->
+<ElementModel v-model:title.big="onlyElementModelTitle"/>
+```
+
+## 透传Attributes
+
+### Attributes继承
+
+- “透传 attribute”指的是传递给一个组件，却没有被该组件声明为 [props](https://cn.vuejs.org/guide/components/props.html) 或 [emits](https://cn.vuejs.org/guide/components/events.html#defining-custom-events) 的 attribute 或者 `v-on` 事件监听器。最常见的例子就是 `class`、`style` 和 `id`。
+- 当一个组件以单个元素为根作渲染时，透传的 attribute 会自动被添加到根元素上。
+
+> 通俗点说就是,假如在当前组件A中引入了一个子组件B,这个子组件B里就一个元素,也就是只有一个根元素了,那样的话,在组件A中使用子组件B的标签,并在标签上标注一些特殊属性比如class,style,id,标注v-on的监听事件比如click之类的,都会被直接传递到子组件B中,标注在子组件B的根元素上
+
+```vue
+<!--父组件-->  
+<p>属性透传</p>
+<Transmit class="good" />
+```
+
+```vue
+<!--子组件-->  
+<!--最终渲染出<button class="good">-->  
+<template>
+普通的透传按钮元素 
+<button>InnerTransmit组件按钮</button>
+</template>
+```
+
+
+
+- 而且如果子组件的根元素上已经有了class或style,就会和父组件中写在子组件标签上的class和style结合
+
+> 比如父组件中的子组件标签是这样`<MyButton class="large" />`
+>
+> 子组件根元素本身是这样`<button class="btn">click me</button>`
+>
+> 最后渲染出来就是这样`<button class="btn large">click me</button>`
+
+- 同样的规则也适用于v-on监听器,监听器比如click会添加到子组件根元素上,当子组件原生的元素被点击,触发父组件的onClick方法,如果子组件原生元素也有click方法,那就点击时两个同时触发
+
+  ```vue
+  <!--父组件-->  
+  <p>属性透传</p>
+  <Transmit @click="printFood" />
+  
+  <script setup>
+      function printFood(){
+          console.log(`今天吃牛霖`)
+      }
+  </script>
+  ```
+
+  ```vue
+  <!--子组件-->
+  <template>
+  <!--透传click事件-->
+    <button @click="printFoodInner">Transmit组件按钮</button>
+  </template>
+  
+  <script setup>
+      //点击按钮同时触发子组件的printFoodInner和父组件透传进来的printFood,实测是先触发子组件的后触发父组件的
+      function printFoodInner(){
+          console.log(`今天吃低脂奶酪`)
+      }
+  </script>
+  
+  ```
+
+#### 深层组件继承
+
+- 有的时候下一个组件会在根节点上渲染另一个组件(`也就是子组件中又有个子组件,套娃`)
+- 这时候特殊的属性和事件就会一路透传下去到最后一个子组件
+  - 透传的 attribute 不会包含 `子组件` 上声明过的 props 或是针对 `emits` 声明事件的 `v-on` 侦听函数，换句话说，声明过的 props 和侦听函数被 `子组件`“消费”了。
+  - 透传的 attribute 若符合声明，也可以作为 props 传入 `最末端的子组件`。
+
+```vue
+<!--父组件-->  
+<p>属性透传</p>
+<Transmit @click="printFood" class="good" :weight="193.8"/>
+
+<script setup>
+    function printFood(){
+        console.log(`今天吃牛霖`)
+    }
+</script>
+```
+
+```vue
+<!--第一层子组件Transmit-->
+<template>
+  <!--透传两层属性-->
+  <InnerTransmit/>
+</template>
+
+<script setup>
+import InnerTransmit from "./second/InnerTransmit.vue"
+//defineProps抓取prop,如果不定义为变量,那么只能在template中直接根据defineProps中接收的prop名来双括号使用
+//如果要在script setup中使用则必须把defineProps定义为变量,再使用这个变量.prop名来获取prop的值,如果像template中那么使用会导致页面重复渲染
+//像weight这种prop被我们半路截下,也就不会透传到更深层组件了
+const props = defineProps(["weight"]);
+console.log(`Transmit截取到的prop属性weight:${props.weight}`);
+</script>
+
+<style scoped>
+
+</style>
+
+```
+
+```vue
+<!--第二层子组件Transmit-->
+<template>
+<!-- 普通的透传按钮元素 -->
+<!-- 最终渲染出的就是<button  @click="printFood" class="good">,weight属性作为prop被上一个组件取用了 -->
+  <button>InnerTransmit组件按钮{{$attrs}}</button>
+</template>
+
+<script setup>
+//子组件中必须是单独元素才可以传递监听事件,哪怕加一个双层括号取一些全局变量{{$attrs}}也会导致监听事件透传失败
+</script>
+
+<style scoped>
+
+</style>
+
+```
+
+### 禁用Attributes继承
+
+- 如果你**不想要**一个组件自动地继承 attribute，你可以在组件选项中设置 `inheritAttrs: false`。
+
+- 如果你使用了 `<script setup>`，你需要一个额外的 `<script>` 块来书写这个选项声明
+
+  ```vue
+  <script>
+  // 使用普通的 <script> 来声明选项
+  export default {
+    inheritAttrs: false
+  }
+  </script>
+  
+  <script setup>
+  // ...setup 部分逻辑
+  </script>
+  ```
+
+- 透传进来的 attribute 可以在模板的表达式中**直接用 `$attrs` 访问到**。
+
+> ```vue
+> <!--但是要注意,如果这样写,组件就不再被识别为只有一个根元素了,会影响透传-->
+> <template>
+> <button>按钮</button>
+> {{attrs}}
+> </template>
+> ```
+>
+> 
+
+- 这个 `$attrs` 对象包含了除组件所声明的 `props` 和 `emits` 之外的所有其他 attribute，例如 `class`，`style`，`v-on` 监听器等等。
+
+  - 和 props 有所不同，透传 attributes 在 JavaScript 中**保留了它们原始的大小写**，所以像 `foo-bar` 这样的一个 attribute 需要通过 `$attrs['foo-bar']` 来访问。
+  - 像 `@click` 这样的一个 `v-on` 事件监听器将在此对象下被**暴露为一个函数 `$attrs.onClick`。**
+
+- 有时可能会存在最末端的子组件,不止一个根元素,基本分为两种情况
+
+  - 为了样式,根元素被div包裹起来了
+
+    - 这时我们想要让可以**透传**的属性和事件都**作用到内层的元素**上,**官方文档**告诉我,可以通过**设定 `inheritAttrs: false` 和使用 `v-bind="$attrs"` 来实现**
+
+    - 但是我个人实验发现**只使用`v-bind="$attrs"`就可以做到**
+
+      ```vue
+      <!--父组件-->  
+      <p>属性透传</p>
+      <Transmit @click="printFood" class="good" :weight="193.8"/>
+      
+      <script setup>
+          function printFood(){
+              console.log(`今天吃牛霖`)
+          }
+      </script>
+      ```
+
+      ```vue
+      <!--第一层子组件Transmit-->
+      <template>
+        <!--透传两层属性-->
+        <InnerTransmit/>
+      </template>
+      
+      <script setup>
+      import InnerTransmit from "./second/InnerTransmit.vue"
+      //defineProps抓取prop,如果不定义为变量,那么只能在template中直接根据defineProps中接收的prop名来双括号使用
+      //如果要在script setup中使用则必须把defineProps定义为变量,再使用这个变量.prop名来获取prop的值,如果像template中那么使用会导致页面重复渲染
+      //像weight这种prop被我们半路截下,也就不会透传到更深层组件了
+      const props = defineProps(["weight"]);
+      console.log(`Transmit截取到的prop属性weight:${props.weight}`);
+      </script>
+      
+      <style scoped>
+      
+      </style>
+      
+      ```
+
+      ```vue
+      <!--第二层子组件Transmit-->
+      <template>
+      <!--  多层包裹,把透传的属性和事件选择性放在某个元素上-->
+      	<div class="green">
+              <!-- 这样透传过来的class以及点击事件就都绑定到这个button上了-->
+          	<button v-bind="$attrs">InnerTransmit组件按钮</button>
+          </div>
+      </template>
+      
+      <script setup>
+          //子组件中必须是单独元素才可以传递监听事件,哪怕加一个双层括号取一些全局变量{{$attrs}}也会导致监听事件透传失败
+      </script>
+      
+      <style scoped>
+      
+      </style>
+      
+      ```
+
+      > [没有参数的 `v-bind`](https://cn.vuejs.org/guide/essentials/template-syntax.html#dynamically-binding-multiple-attributes) 会将一个对象的所有属性都作为 attribute 应用到目标元素上。
+      >
+      > 没有参数的v-bind就是`v-bind=xxx`,有参数的是`v-bind:name=xxx`
+      >
+      > 比如有个对象`{class:abc,style:{color:red}}`,没有参数的v-bind绑定这个对象到某个元素上相当于一次性绑定了class和style这两个属性给这个元素
+
+  - 同时存在多个根元素同级
+
+    - 和单根节点组件有所不同，有着多个根节点的组件没有自动 attribute 透传行为。如果 `$attrs` 没有被显式绑定，将会抛出一个**运行时警告**。
+
+    - 如果 `$attrs` 被显式绑定，则不会有警告
+
+      ```vue
+      <template>
+      <!--
+      这样会因为最深层不是一个根节点导致透传不知道传给谁,控制台报错
+      runtime-core.esm-bundler.js:40 [Vue warn]: Extraneous non-props attributes (class) were passed to component but could not be automatically inherited because component renders fragment or text root nodes.
+        at <InnerTransmit onClick=fn<printFood> class="good" >
+        at <Transmit onClick=fn<printFood> class="good" weight=193.8 >
+        at <App>
+      runtime-core.esm-bundler.js:40 [Vue warn]: Extraneous non-emits event listeners (click) were passed to component but could not be automatically inherited because component renders fragment or text root nodes. If the listener is intended to be a component custom event listener only, declare it using the "emits" option.
+        at <InnerTransmit onClick=fn<printFood> class="good" >
+        at <Transmit onClick=fn<printFood> class="good" weight=193.8 >
+        at <App>
+      runtime-core.esm-bundler.js:40 [Vue warn]: Extraneous non-props attributes (class) were passed to component but could not be automatically inherited because component renders fragment or text root nodes.
+        at <WelcomeItem class="kkkkk" >
+        at <TheWelcome class="kkkkk" ref="welcome" >
+        at <App>
+      -->
+        <div>第一个div</div>
+        <span v-bind="$attrs">第二个span</span>
+        <div>第三个div</div>
+      </template>
+      
+      <script setup>
+      //子组件中必须是单独元素才可以传递监听事件,哪怕加一个双层括号取一些全局变量{{$attrs}}也会导致监听事件透传失败
+      </script>
+      
+      <style scoped>
+      
+      </style>
+      
+      ```
+
+      
+
+### 在JS中访问透传Attributes
+
+- 如果需要，你可以在 `<script setup>` 中使用 `useAttrs()` API 来访问一个组件的所有透传 attribute
+
+  ```vue
+  <script setup>
+  import { useAttrs } from 'vue'
+  
+  const attrs = useAttrs()
+  </script>
+  ```
+
+  
