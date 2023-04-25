@@ -250,6 +250,7 @@ module.exports = {
                     title: 'nginx笔记',
                     children:[
                         ['/nginx/nginx/nginx','nginx笔记'],
+                        ['/nginx/nginx/docker-compose部署nginx','docker-compose部署nginx'],
                     ]
                 }
             ],

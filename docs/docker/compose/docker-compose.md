@@ -150,6 +150,8 @@
 
 ### docker
 
+#### 阿里云安装
+
 - 服务器是买的阿里云计算型c7,centos7.9版本
 
 - [使用官方脚本自动安装](https://www.runoob.com/docker/centos-docker-install.html)
@@ -161,6 +163,24 @@
 - 然后安装一切正常,但是如果运行`docker --version`会报错`Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?`
 
 - 这是因为[安装完没在系统中启动](https://blog.csdn.net/weixin_45496075/article/details/109123709),只需要运行`systemctl start docker`即可
+
+#### 腾讯云安装
+
+- 我在腾讯云服务器使用上面的自动安装脚本失败了`curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun`
+
+- 报错信息为`ERROR: Unsupported distribution 'tencentos'`
+
+- 登录腾讯云控制台,发现系统为`TencentOS Server 3.1 (TK4)`版本,该版本已经预置docker
+
+> 本文使用云服务器实例操作系统以 CentOS 8.2 及 7.6 为例。
+> 若您使用了 TencentOS Server 操作系统，则需对应实际版本进行操作：
+>
+> TencentOS Server 2.4 (TK4)：镜像已预置 Docker，无需再次安装，可参考 使用 Docker 直接开始使用。
+> TencentOS Server 3.1：镜像已预置 Docker，无需再次安装，可参考 使用 Docker 直接开始使用。
+
+- 只需要按照[教程](https://cloud.tencent.com/document/product/213/46000#userDocker)使用即可,运行`systemctl start docker`启动docker
+
+  
 
 ## 命令
 

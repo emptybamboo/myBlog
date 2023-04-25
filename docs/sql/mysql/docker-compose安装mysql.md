@@ -37,6 +37,8 @@
         - /root/software/mysql/data/:/var/lib/mysql/
         # 配置挂载
         - /root/software/mysql/conf/:/etc/mysql/conf.d/
+        # 日志挂载
+        - /root/software/mysql8.0/logs:/logs
       command:
         # 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)
         --default-authentication-plugin=mysql_native_password
@@ -45,6 +47,19 @@
         --explicit_defaults_for_timestamp=true
         --lower_case_table_names=1
   ```
+
+- 千万要注意,有一个大坑,就是**配置文件**的问题,如果直接这样启动,那配置文件是由容器外向内覆盖挂载的,会导致你准备好的空配置文件目录依然是空,哪怕你提前准备了配置问价,也可能因为版本问题失效
+
+- 这时候,需要先拉取一个没怎么配置过得镜像直接生成容器,然后把容器内配置文件复制到服务器上`docker cp mysql:/etc/mysql/my.cnf ./`
+
+  ```shell
+  docker run -p 3306:3306 --name mysql \
+   -e MYSQL_ROOT_PASSWORD=123456 \
+   --restart=always \
+   -d mysql:8.0.21
+  ```
+
+- 这时候你修改配置文件,把它放到你映射入容器的配置文件目录即可
 
 - 然后服务器中cd到具体的docker-compose配置文件目录
 
@@ -63,3 +78,21 @@
 - 解决方法就是,首先不在yml中写目录映射,直接启动,进入容器内部把你想映射的目录或文件通过命令复制到宿主机,然后删掉容器,这时候再在yml中把复制出来的文件/文件夹映射到容器内部就可以了
 
 - 运行日志出现IP address '156.96.155.240' could not be resolved: Temporary failure in name resolution的时候,进入mysql容器,安装vim,修改/ect/mysql/my.cnf文件 在最后追加skip-host-cache和skip-name-resolve,也就是`echo -e "skip-host-cache skip-name-resolve" >> my.cnf`,然后重启容器即可
+
+- 运行日志出现mbind: Operation not permitted,只需要去docker-compose.yml中配置mysql对应service下的一级配置cap_add即可
+
+  ```yml
+  version: '3.7'
+  services:
+    mysql8.0:
+      # 镜像名
+      image: mysql:8.0.21
+      # 容器名(以后的控制都通过这个)
+      container_name: mysql8.0
+      # 重启策略
+      restart: always
+      cap_add:
+        - SYS_NICE # 添加到SYS NICE,试着解决容器日志报的mbind: Operation not permitted
+  ```
+
+  
