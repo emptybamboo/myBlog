@@ -61,6 +61,42 @@
 
 - 这时候你修改配置文件,把它放到你映射入容器的配置文件目录即可
 
+  ```ini
+  # Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+  #
+  # This program is free software; you can redistribute it and/or modify
+  # it under the terms of the GNU General Public License as published by
+  # the Free Software Foundation; version 2 of the License.
+  #
+  # This program is distributed in the hope that it will be useful,
+  # but WITHOUT ANY WARRANTY; without even the implied warranty of
+  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  # GNU General Public License for more details.
+  #
+  # You should have received a copy of the GNU General Public License
+  # along with this program; if not, write to the Free Software
+  # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+  
+  #
+  # The MySQL  Server configuration file.
+  #
+  # For explanations see
+  # http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+  
+  [mysqld]
+  pid-file        = /var/run/mysqld/mysqld.pid
+  socket          = /var/run/mysqld/mysqld.sock
+  datadir         = /var/lib/mysql
+  secure-file-priv= NULL
+  
+  # Custom config should go here
+  !includedir /etc/mysql/conf.d/
+  # 解决可能出现IP address '156.96.155.240' could not be resolved: Temporary failure in name resolution的问题
+  skip-host-cache
+  skip-name-resolve
+  
+  ```
+
 - 然后服务器中cd到具体的docker-compose配置文件目录
 
 - 运行`docker-compose --compatibility up`,如果文件重命名了就执行`docker-compose -f 配置文件名.yml --compatibility up`

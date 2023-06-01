@@ -1402,15 +1402,15 @@ forRef:{{JSON.stringify(forRef)}}
 >       <p>模板引用ref绑定函数</p>
 >       <div :ref="bindRef">哈哈哈</div>
 >     </template>
->     
+>         
 >     <script>
 >     import { ref, toRef } from 'vue'
->     
+>         
 >     export default {
 >       setup() {
 >         const elRef = ref(null)
 >         const bindRef = toRef(elRef, 'value')
->     
+>         
 >         return {
 >           bindRef
 >         }
@@ -1430,10 +1430,10 @@ forRef:{{JSON.stringify(forRef)}}
 >       <div :ref="elRefs.item1">项目1</div>
 >       <div :ref="elRefs.item2">项目2</div>
 >     </template>
->     
+>         
 >     <script>
 >     import { ref, toRefs } from 'vue'
->     
+>         
 >     export default {
 >       setup() {
 >         const elRefs = toRefs({
@@ -1441,7 +1441,7 @@ forRef:{{JSON.stringify(forRef)}}
 >           item1: ref(null),
 >           item2: ref(null)
 >         })
->     
+>         
 >         return {
 >           elRefs
 >         }
@@ -2795,4 +2795,6 @@ console.log(`Transmit截取到的prop属性weight:${props.weight}`);
   </script>
   ```
 
-  
+
+## 插槽
+

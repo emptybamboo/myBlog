@@ -70,6 +70,13 @@ module.exports = {
                         ['/javaFramework/mybatis/mybatis-plus','MyBatis-Plus笔记'],
                     ]
                 },
+                {
+                    title: 'springboot',
+                    children:[
+                        ['/javaFramework/springboot/i18n','springboot实现i18n国际化'],
+                        ['/javaFramework/springboot/websocket','springboot实现STOMP方式的websocket'],
+                    ]
+                },
             ],
             '/vuePress/': [
                 {

@@ -18,7 +18,7 @@
   # 修改连接为所有ip
   bind 0.0.0.0
   # 允许外网访问
-  protected-mode no
+  protected-mode yes
   port 6379
   timeout 0
   # RDB存储配置
@@ -34,7 +34,7 @@
   appendfsync everysec
   appendfilename "appendonly.aof"
   # 设置密码
-  requirepass 123456
+  requirepass shineray9527
   ```
 
 - 写好docker-compose配置文件
